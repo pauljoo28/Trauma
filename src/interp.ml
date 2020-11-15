@@ -1,5 +1,4 @@
 open ImpAST
-open Check
 open Util
 
 let rec step_expr (e : expr) (s : sigma) : (expr * sigma) =
@@ -126,8 +125,8 @@ and eval_while (b:expr) (c:expr) (s:sigma) : expr * sigma =
   step_expr (If (b, c1', c2')) s
 
 and eval_let (v:expr) (t:group) (e1:expr) (e2:expr) (c:sigma) : expr * sigma =
-  match step_expr v c with
-  | Var x, _ -> (match step_expr e1 c with
+  match v with
+  | Var x -> (match step_expr e1 c with
     | Num n, _ -> step_expr e2 (Util.updatestore x n c)
     | _ -> failwith "Not a base type in let"
     )
@@ -157,7 +156,7 @@ and eval_out (k:int) (iter:expr) (c:sigma) : expr * sigma =
   match step_expr iter c with
   | Iter (v, s, e1, e2), c' -> 
     if k = 0 then e2, c' else
-    let (e', c'') = eval_let v s e1 e2 c in
+    let (e', c'') = eval_let v s e2 e1 c' in
     eval_out (k-1) (Iter (v, s, e1, e')) c''
   | _ -> failwith "Eval Out has to be applied to a stream"
 

@@ -25,6 +25,22 @@ rule read = parse
   | "print"         { PRINT }
   | "true"          { TRUE }
   | "false"         { FALSE }
+  | "while"         { WHILE }
+  | "int"           { INT }
+  | "bool"          { BOOL }
+  | "let"           { LET }
+  | ":"             { COLON }
+  | "be"            { BE }
+  | "on"            { ON }
+  | "iter"          { ITER }
+  | "to"            { TO }
+  | "fst"           { FST }
+  | "snd"           { SND }
+  | "out"           { OUT }
+  | "zero"          { ZERO }
+  | ","             { COMMA }
+  | "["             { LBRACKET }
+  | "]"             { RBRACKET }
   | "*"             { MULT }
   | "+"             { PLUS }
   | "-"             { MINUS }
@@ -41,25 +57,6 @@ rule read = parse
   | "else"          { ELSE }
   | "}"             { END }
   | "="             { ASSIGN }
-  | "while"         { WHILE }
-
-  | "let"           { LET }
-  | ":"             { COLON }
-  | "sigma"         { SIGMA }
-  | "be"            { BE }
-  | "on"            { ON }
-  | "iter"          { ITER }
-  | "to"            { TO }
-  | "fst"           { FST }
-  | "snd"           { SND }
-  | "out"           { OUT }
-  | "["             { LBRACKET }
-  | "]"             { RBRACKET }
-  | "zero"          { ZERO }
-  | ","             { COMMA }
-
-  | "int"           { INT }
-  | "bool"          { BOOL }
 
   | num as num      { NUM (int_of_string num) }
   | id as id        { ID id }

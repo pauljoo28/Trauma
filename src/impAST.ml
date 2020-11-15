@@ -10,7 +10,7 @@ type group =
   | Stream of group
 
 type expr =
-  (* Normal IMP expressions *)
+  (* Basic Imp expressions *)
   | Num of int
   | Var of string
   | Plus of (expr * expr)
