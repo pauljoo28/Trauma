@@ -37,7 +37,10 @@ and eval_num (n:int) (s:sigma) : expr * sigma =
   Num n, s
 
 and eval_var (v:string) (s:sigma) : expr * sigma =
-  Num (Util.lookupstore v s), s
+  if (Util.memstore v s) then  
+    (Num (Util.lookupstore v s), s)
+  else
+    (Util.lookupfstore v s, s)
 
 and eval_minus (n1:expr) (n2:expr) (s:sigma) : expr * sigma =
   (match step_expr n1 s, step_expr n2 s with
@@ -117,6 +120,8 @@ and eval_if (b:expr) (c1:expr) (c2:expr) (s:sigma) : expr * sigma =
 and eval_assign (v:string) (a:expr) (s:sigma) : expr * sigma =
   (match step_expr a s with
     | Num n, _ -> (Skip, Util.updatestore v n s)
+    | Iter e, _ -> 
+      (Skip, Util.updatefstore v (Iter e) s)
     | _ -> failwith "aexp did not reduce down num value")
 
 and eval_while (b:expr) (c:expr) (s:sigma) : expr * sigma =
