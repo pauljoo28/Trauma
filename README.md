@@ -1,6 +1,8 @@
 # Trauma
 
-Starter code taken from imp.
+This is a Trauma. A programming language that is meant to prototype the concepts of differential dataflow outlined in this paper: http://michaelisard.com/pubs/differentialdataflow.pdf.
+
+Setup is taken from pauljoo28/Imp.
 ------
 
 A framework for a simple (IMP language)[https://www.cs.cornell.edu/courses/cs6110/2019sp/lectures/lec08.pdf] interpreter in OCaml.
