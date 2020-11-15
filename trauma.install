@@ -1,0 +1,11 @@
+lib: [
+  "_build/install/default/lib/trauma/META"
+  "_build/install/default/lib/trauma/dune-package"
+  "_build/install/default/lib/trauma/opam"
+]
+bin: [
+  "_build/install/default/bin/trauma"
+]
+doc: [
+  "_build/install/default/doc/trauma/README.md"
+]

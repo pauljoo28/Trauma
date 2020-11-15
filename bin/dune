@@ -1,0 +1,4 @@
+(executable
+ (name trauma)
+ (public_name trauma)
+ (libraries impl))
