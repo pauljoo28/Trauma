@@ -2,6 +2,8 @@
 
 This is a Trauma. A programming language that is meant to prototype the concepts of differential dataflow outlined in this paper: http://michaelisard.com/pubs/differentialdataflow.pdf.
 
+Some of the starting code was taken from pauljoo28/Imp
+
 OCaml 4.04 or higher required
 
 Set Up
