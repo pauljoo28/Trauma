@@ -11,7 +11,7 @@ Lets call the input after the (i,j)th iteration the (i,j)th version. We accompli
 
 We started by creating a very simple prototype language that contains the relevant types and expressions that are specified in the paper and are shown in the image in the bottom.
 
-![](Screen Shot 2020-11-15 at 7.17.23 PM.png)
+![](Images/Screen Shot 2020-11-15 at 7.17.23 PM.png)
 
 Currently the sigma type is modeled as just integers. The two more interesting expressions to note here are iter and out. iter takes in two expressions and returns a stream. out takes in an integer, k, and a stream and substitutes e' for x in e, takes that output, and feeds the output back as a substitute for e again for k number of times. In the future, we will be using the flexibility of sigma to model collections.
 Here is an example test.
