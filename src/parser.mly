@@ -2,6 +2,7 @@
 %{
 open ImpAST
 open Str
+open Collection
 
 exception ParseException of string
 %}
@@ -32,6 +33,8 @@ exception ParseException of string
 %token END
 %token ASSIGN
 %token WHILE
+%token EMPTY
+%token TRACE
 
 %token LET
 %token COLON
@@ -47,9 +50,10 @@ exception ParseException of string
 %token RBRACKET
 %token ZERO
 %token COMMA
+%token DOT
+%token FINSERT
 
 %token INT
-%token BOOL
 
 (* Precedences *)
 %left SEQ
@@ -83,10 +87,16 @@ main:
     { c }
 
 group:
-  | INT;  { Base (Int) }
-  | BOOL; { Base (Bool) }
+  | INT;  { Base }
+
+pair:
+  | LPAREN; e1 = expr; COMMA; e2 = expr; RPAREN; { Pair (e1, e2) }
 
 expr:
+  | e1 = expr; DOT; FINSERT; LPAREN; e2 = expr; RPAREN;
+     { Finsert (e1, e2) }
+  | TRACE; LPAREN; e = separated_list(COMMA, expr); RPAREN;
+     { Trace e }
   | c1 = expr; SEQ; c2 = expr;
     { Seq (c1, c2) }
   | c = expr; SEQ;
@@ -140,5 +150,9 @@ expr:
      { Iter (x, s, e1, e2) }
   | OUT; LBRACKET; x = NUM; RBRACKET; LPAREN; e = expr; RPAREN;
      { Out (x, e) }
+  | EMPTY;
+     { Collection (Collection.empty) }
+  | p = pair;
+      { p }
 
 %%

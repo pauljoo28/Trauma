@@ -9,7 +9,7 @@ exception SyntaxError of string
 (* Regex definitons *)
 
 let white = [' ' '\t']
-let num = ['0'-'9']+
+let num = '-'?['0'-'9']+
 let letter = ['a'-'z' 'A'-'Z']
 let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
 let newline = ['\n' '\r']
@@ -27,7 +27,6 @@ rule read = parse
   | "false"         { FALSE }
   | "while"         { WHILE }
   | "int"           { INT }
-  | "bool"          { BOOL }
   | "let"           { LET }
   | ":"             { COLON }
   | "be"            { BE }
@@ -39,6 +38,7 @@ rule read = parse
   | "out"           { OUT }
   | "zero"          { ZERO }
   | ","             { COMMA }
+  | "."             { DOT }
   | "["             { LBRACKET }
   | "]"             { RBRACKET }
   | "*"             { MULT }
@@ -57,6 +57,10 @@ rule read = parse
   | "else"          { ELSE }
   | "}"             { END }
   | "="             { ASSIGN }
+  | "EMPTY"         { EMPTY }
+  (* Built in functions *)
+  | "insert"        { FINSERT }
+  | "TRACE"         { TRACE }
 
   | num as num      { NUM (int_of_string num) }
   | id as id        { ID id }

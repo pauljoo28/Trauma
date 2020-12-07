@@ -1,3 +1,5 @@
+open Collection
+
 type typ =
   | Int
   | Bool
@@ -5,8 +7,8 @@ type typ =
 
 type group =
   | Unit
-  | Base of typ
-  | Pair of (group * typ)
+  | Base
+  | Pair of (group * int)
   | Stream of group
 
 type expr =
@@ -31,6 +33,7 @@ type expr =
   | If of (expr * expr * expr)
   | Assign of (string * expr)
   | While of (expr * expr)
+  | Pair of (expr * expr)
   (* Differential Dataflow Specific Expressions *)
   | Let of (expr * group * expr * expr)
   | Unit of (group)
@@ -41,5 +44,8 @@ type expr =
   | Snd of (expr)
   | Iter of (expr * group * expr * expr)
   | Out of (int * expr)
+  | Collection of (collection)
+  | Finsert of (expr * expr)
+  | Trace of (expr list)
 
 type prog = expr

@@ -1,10 +1,18 @@
 open ImpAST
 open Util
+open Collection
+open Trace
+
+let rec debug_assoc_list lst = 
+  match lst with
+  | [] -> Printf.printf "]\n"; ()
+  | (h1, h2) :: t -> Printf.printf "(%i, %i), " h1 h2; debug_assoc_list t
 
 let rec step_expr (e : expr) (s : sigma) : (expr * sigma) =
   match e with
   | Num n -> eval_num n s
   | Var v -> eval_var v s
+  | Collection coll -> (Collection (coll), s)
   | Minus (n1, n2) -> eval_minus n1 n2 s
   | Plus (n1, n2) -> eval_plus n1 n2 s
   | Mult (n1, n2) -> eval_mult n1 n2 s
@@ -32,15 +40,31 @@ let rec step_expr (e : expr) (s : sigma) : (expr * sigma) =
   | Snd (e) -> eval_snd e s
   | Iter e -> Iter e, s
   | Out (k, e) -> eval_out k e s
+  | Finsert (e1, e2) -> eval_finsert e1 e2 s
+  | Pair (e1, e2) -> eval_pair e1 e2 s
+  | Trace (lst) -> eval_trace lst s
 
 and eval_num (n:int) (s:sigma) : expr * sigma =
   Num n, s
 
+and eval_pair (e1:expr) (e2:expr) (s:sigma) : expr * sigma =
+  let x1 = match step_expr e1 s with
+  | Num n, _ -> n
+  | _ -> failwith "Not an integer"
+  in
+  let x2 = match step_expr e2 s with
+  | Num n, _ -> n
+  | _ -> failwith "Not an integer"
+  in
+  Collection (Collection.make [(x1, x2)]), s
+
 and eval_var (v:string) (s:sigma) : expr * sigma =
   if (Util.memstore v s) then  
     (Num (Util.lookupstore v s), s)
-  else
+  else if (Util.memfstore v s) then
     (Util.lookupfstore v s, s)
+  else
+    Util.lookupcstore v s, s
 
 and eval_minus (n1:expr) (n2:expr) (s:sigma) : expr * sigma =
   (match step_expr n1 s, step_expr n2 s with
@@ -96,6 +120,8 @@ and eval_print (a:expr) (s:sigma) : expr * sigma =
     | Num n, _ -> print_endline (string_of_int n); (Skip, s)
     | True, _ -> print_endline (string_of_bool true); (Skip, s)
     | False, _ -> print_endline (string_of_bool false); (Skip, s)
+    | Collection col, _ -> debug_assoc_list (Collection.to_list col); (Skip, s)
+    | Trace lst, _ -> debug_trace lst s; (Skip, s)
     | _ -> failwith "aexp did not reduce down num value")
 
 and eval_seq (c1:expr) (c2:expr) (s:sigma) : expr * sigma =
@@ -120,6 +146,8 @@ and eval_if (b:expr) (c1:expr) (c2:expr) (s:sigma) : expr * sigma =
 and eval_assign (v:string) (a:expr) (s:sigma) : expr * sigma =
   (match step_expr a s with
     | Num n, _ -> (Skip, Util.updatestore v n s)
+    | Collection col, _ -> (Skip, Util.updatecstore v (Collection(col)) s)
+    | Trace lst, _ -> (Skip, Util.updatefstore v (Trace(lst)) s)
     | Iter e, _ -> 
       (Skip, Util.updatefstore v (Iter e) s)
     | _ -> failwith "aexp did not reduce down num value")
@@ -164,6 +192,38 @@ and eval_out (k:int) (iter:expr) (c:sigma) : expr * sigma =
     let (e', c'') = eval_let v s e2 e1 c' in
     eval_out (k-1) (Iter (v, s, e1, e')) c''
   | _ -> failwith "Eval Out has to be applied to a stream"
+
+and eval_finsert (e1:expr) (e2:expr) (c:sigma) : expr * sigma =
+  let x1 = 
+    (match step_expr e1 c with
+      | Collection coll1, c' -> coll1
+      | _ -> failwith "Not a collection")
+  in
+  let x2 = 
+    (match step_expr e2 c with
+      | Collection coll2, c' -> coll2
+      | _ -> failwith "Not a collection")
+  in
+  (Collection(Collection.insert x1 x2), c)
+
+and eval_trace (lst:expr list) (s:sigma) : expr * sigma =
+  Trace (lst), s
+
+and debug_trace_helper lst =
+  match lst with
+  | [] -> Printf.printf "]\n"; ()
+  | h :: t -> debug_assoc_list h; debug_trace_helper t
+
+and debug_trace lst s =
+  Printf.printf "Trace: \n";
+  let tlst = List.map (
+    fun x -> match step_expr x s with
+    | Collection col, _ -> Collection.to_list col
+    | _ -> failwith "Not a collection in the trace"
+  ) lst in
+  debug_trace_helper (tlst);
+  Printf.printf "End Trace\n";
+  ()
 
 let rec eval_prog (p : prog) : unit =
   match p with
