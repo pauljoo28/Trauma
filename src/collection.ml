@@ -1,11 +1,15 @@
-type collection = (int * int) list
+type collection = (string, int) Hashtbl.t
 
-let empty = []
-let get i c = 
-    if List.mem_assoc i c then List.assoc i c else 0
-let insert c1 c2 = 
-    let indices = List.append (fst (List.split c1)) (fst (List.split c2)) in
-    let unique = List.sort_uniq (fun a b -> if a < b then -1 else if a = b then 0 else -1) indices in
-    List.map (fun i -> (i, (get i c1) + (get i c2))) unique
-let make pairs = pairs
-let to_list col = col
+let empty : collection = Hashtbl.create 10000
+
+let get (k:'a) (c:collection) : int = 
+    Hashtbl.find c k
+
+let iter (f:('a -> int -> unit)) (h:collection) : unit = 
+    Hashtbl.iter f h
+
+let insert (c:collection) (key:'a) (n:int) : unit =
+    Hashtbl.add c key n
+
+let add (c1:collection) (c2:collection) : unit =
+    Hashtbl.iter (fun x y -> Hashtbl.add c1 x (Hashtbl.find c1 x + y)) c2

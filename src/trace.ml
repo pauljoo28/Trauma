@@ -1,15 +1,17 @@
 open Collection
+open Diffs
 
-type trace = collection list
+type trace = (string, Diffs.diffs) Hashtbl.t
 
-let empty = []
-let make lst = lst
+let empty : trace = Hashtbl.create 10000
 
-let rec sum_help k lst aux = match lst with
-    | [] -> aux
-    | h :: t -> if (k == 0) then aux else 
-        sum_help (k-1) t (Collection.insert aux h)
+let get (key:string) (tr:trace) : diffs =
+    Hashtbl.find tr key
 
-let version k lst = sum_help k lst Collection.empty
+let populate_helper (col:collection) (tr:trace) (time:int list) : unit =
+    Collection.iter (fun k v -> Diffs.insert time v (get k tr)) col
 
-let to_list t = t
+let populate (cols:collection list) (tr:trace) : unit =
+    match cols with
+    | [] -> ()
+    | h :: t ->

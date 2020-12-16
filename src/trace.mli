@@ -1,8 +1,7 @@
 open Collection
 
-type trace
+type 'a trace
 
-val empty : trace
-val make : collection list -> trace
-val version : int -> trace -> collection
-val to_list : trace -> collection list
+val empty : 'a trace
+val populate : collection list -> 'a trace -> unit
+val state_at : int list -> 'a trace -> collection
