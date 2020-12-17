@@ -77,7 +77,7 @@ and count_down (t : int) (acc : int list) : int list =
 and concat_all (all: ((int list) list) list) (acc:(int list) list) : ((int list) list) =
     match all with
     | [] -> acc
-    | h :: t -> concat_all t (h @ acc)
+    | h :: t -> concat_all t (acc @ h)
 
 and reverse (lst: (int list) list) : (int list) list =
     List.map (fun x -> List.rev x) lst
@@ -98,3 +98,25 @@ let debug_get_dim (tr:'a trace) : int =
     match tr with
     | Base c -> 0
     | Ind (_, d) -> d
+
+let rec map (f: 'a collection -> 'a collection) (tr: 'a trace) : 'a trace =
+    match tr with
+    | Base c -> Base (f c)
+    | Ind (tr, d) -> Ind (List.map (fun x -> map f x) tr, d)
+
+(** TODO: versions something i dont know how to get the max time of a trace *)
+let rec distinct (tr:'a trace) : 'a trace =
+    distinct_helper_2 tr (empty_output tr) (versions [1;2])
+
+and distinct_helper (itr:'a trace) (otr:'a trace) (time:int list) : 'a trace =
+    let iversion = get_version time itr |> to_collection in
+    let oversion = get_version time otr |> to_collection in
+    Base (Collection.subtract (Collection.distinct iversion) (oversion))
+
+and distinct_helper_2 (itr:'a trace) (otr:'a trace) (times:int list list) : 'a trace =
+    match times with
+    | [] -> otr
+    | h :: t -> distinct_helper_2 itr (distinct_helper itr otr h) t
+
+and empty_output (input:'a trace) : 'a trace =
+    map (fun x -> Collection.empty) input

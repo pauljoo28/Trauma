@@ -20,5 +20,8 @@ val get_diff_version : int list -> 'a trace -> 'a trace
 (** [get_version k t] creates the version of [t] at [k] *)
 val get_version : int list -> 'a trace -> 'a trace
 
+(** [distince tr] creates the output trace *)
+val distinct : 'a trace -> 'a trace
+
 (** Debug *)
 val debug_get_dim : 'a trace -> int
