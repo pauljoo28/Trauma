@@ -15,3 +15,14 @@ let rec add (c1:'a collection) (c2:'a collection) : 'a collection =
     match c2 with
     | [] -> c1
     | h :: t -> add (insert (h) c1) t
+
+let debug_string_collection_tostring_helper (col:string collection) : string =
+    String.concat "," 
+    (List.map 
+    (fun x -> 
+        let (k, v) = x in
+        "(" ^ k ^ ", " ^ string_of_int v ^ ")")
+    col)
+
+let debug_string_collection_tostring (col:string collection) : string =
+    "[" ^ debug_string_collection_tostring_helper col ^ "]"

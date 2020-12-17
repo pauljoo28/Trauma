@@ -9,17 +9,26 @@ let to_collection (tr:'a trace) : 'a collection =
     | Base c -> c
     | Ind _ -> failwith "Should not have more than 1 dimension"
 
-let add_diff (col:'a collection) (trace2:'a trace) : 'a trace =
+let rec add_diff_helper (col:'a collection) (trace2:'a trace) : 'a trace =
     match trace2 with
     | Ind (t, d) -> 
         if d = 1 then Ind ((t @ [Base col]), d) else
         failwith "Must add diff to only dimension 1 traces"
     | _ -> failwith "Must add dimension before adding diff"
 
+and add_diff (k:int list) (col:'a collection) (trace2:'a trace) : 'a trace =
+    match k with
+    | [] -> add_diff_helper col trace2
+    | h :: t -> 
+        match trace2 with
+        | Base _ -> failwith "Not enough dimensions"
+        | Ind (tr', d) -> 
+            Ind (List.mapi (fun i x -> if i = h then add_diff t col x else x) tr', d)
+
 let add_dim (tr:'a trace) : 'a trace =
     match tr with
     | Base c -> Ind ([Base c], 1)
-    | Ind (t, d) -> Ind ([tr], d+1)
+    | Ind (t, d) -> Ind (List.map (fun x -> Ind([x], d)) t, d+1)
 
 let rec get_diff_version_helper1 (k:int) (tr:'a trace) : 'a trace =
     match tr with
