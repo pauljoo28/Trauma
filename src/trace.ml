@@ -2,13 +2,18 @@ open Collection
 
 type 'a trace = Base of 'a collection | Ind of ('a trace list * int)
 
-let empty : 'a trace = Base(Collection.empty)
+let init (col:'a collection) : 'a trace = Base(col)
+
+let to_collection (tr:'a trace) : 'a collection =
+    match tr with
+    | Base c -> c
+    | Ind _ -> failwith "Should not have more than 1 dimension"
 
 let add_diff (col:'a collection) (trace2:'a trace) : 'a trace =
     match trace2 with
     | Ind (t, d) -> 
-        if d = 1 then Ind ((Base col:: t), d) else
-        failwith "Must add diff to onl  y dimension 1 traces"
+        if d = 1 then Ind ((t @ [Base col]), d) else
+        failwith "Must add diff to only dimension 1 traces"
     | _ -> failwith "Must add dimension before adding diff"
 
 let add_dim (tr:'a trace) : 'a trace =
@@ -79,3 +84,8 @@ let rec get_version_helper (k:(int list) list) (tr:'a trace) (acc:'a collection)
 
 let get_version (k:int list) (tr:'a trace) : 'a trace =
     Base (get_version_helper (versions k) tr Collection.empty)
+
+let debug_get_dim (tr:'a trace) : int =
+    match tr with
+    | Base c -> 0
+    | Ind (_, d) -> d

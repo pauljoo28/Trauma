@@ -27,3 +27,6 @@ data/
 
 # Swp files
 *.swp
+
+# byte files
+*.byte
