@@ -25,3 +25,4 @@ val distinct : 'a trace -> 'a trace
 
 (** Debug *)
 val debug_get_dim : 'a trace -> int
+val debug_iter_tostring : 'a trace -> string

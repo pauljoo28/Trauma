@@ -94,19 +94,27 @@ let rec get_version_helper (k:(int list) list) (tr:'a trace) (acc:'a collection)
 let get_version (k:int list) (tr:'a trace) : 'a trace =
     Base (get_version_helper (versions k) tr Collection.empty)
 
-let debug_get_dim (tr:'a trace) : int =
-    match tr with
-    | Base c -> 0
-    | Ind (_, d) -> d
-
 let rec map (f: 'a collection -> 'a collection) (tr: 'a trace) : 'a trace =
     match tr with
     | Base c -> Base (f c)
     | Ind (tr, d) -> Ind (List.map (fun x -> map f x) tr, d)
 
-(** TODO: versions something i dont know how to get the max time of a trace *)
+let rec iter_helper1 (tr:'a trace list) (index:int) (acc:int list list) : int list list =
+    match tr with
+    | [] -> acc
+    | h :: t -> iter_helper1 t (index+1) 
+        (acc @ (List.map (fun x -> index :: x) (iter_helper2 h)))
+
+and iter_helper2 (tr:'a trace) : int list list =
+    match tr with
+    | Base c -> [[]]
+    | Ind (trl, d) -> iter_helper1 trl 0 []
+
+let iter (tr: 'a trace) : int list list =
+    iter_helper2 tr
+
 let rec distinct (tr:'a trace) : 'a trace =
-    distinct_helper_2 tr (empty_output tr) (versions [1;2])
+    distinct_helper_2 tr (empty_output tr) (iter tr)
 
 and distinct_helper (itr:'a trace) (otr:'a trace) (time:int list) : 'a trace =
     let iversion = get_version time itr |> to_collection in
@@ -120,3 +128,17 @@ and distinct_helper_2 (itr:'a trace) (otr:'a trace) (times:int list list) : 'a t
 
 and empty_output (input:'a trace) : 'a trace =
     map (fun x -> Collection.empty) input
+
+let debug_get_dim (tr:'a trace) : int =
+    match tr with
+    | Base c -> 0
+    | Ind (_, d) -> d
+
+let debug_int_list_tostring (input:int list) : string =
+    "(" ^ String.concat ", " (List.map (fun x -> string_of_int x) input) ^ ")"
+
+let debug_int_list_list_tostring (input:int list list) : string =
+    "[" ^ String.concat ", " (List.map (fun x -> debug_int_list_tostring x) input) ^ "]"
+
+let debug_iter_tostring (input:'a trace) : string =
+    debug_int_list_list_tostring (iter input)
