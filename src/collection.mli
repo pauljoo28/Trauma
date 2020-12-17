@@ -1,7 +1,6 @@
-type collection
+type 'a collection
 
-val empty : collection
-val get : int -> collection -> int
-val insert : collection -> collection -> collection
-val make : (int * int) list -> collection
-val to_list : collection -> (int * int) list
+val empty : 'a collection
+val get : 'a -> 'a collection -> int
+val insert : ('a * int) -> 'a collection -> 'a collection
+val add : 'a collection -> 'a collection -> 'a collection
