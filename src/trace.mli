@@ -12,7 +12,7 @@ val add_diff : 'a collection -> 'a trace -> 'a trace
 val add_dim : 'a trace -> 'a trace
 
 (** [get_version k t] creates the version of [t] at [k] *)
-val get_diff_version : int -> 'a trace -> 'a collection
+val get_diff_version : int list -> 'a trace -> 'a trace
 
 (** [get_version k t] creates the version of [t] at [k] *)
-(* val get_version : int -> 'a trace -> 'a collection *)
+val get_version : int list -> 'a trace -> 'a trace
