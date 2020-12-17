@@ -98,7 +98,33 @@ let test_trace_08 =
   |> to_collection
   |> Collection.get "This"
 
-(* let test_trace_09 =
+let test_trace_09 =
+  Trace.init col1 
+  |> Trace.add_dim 
+  |> Trace.add_diff [] col2
+  |> Trace.add_diff [] col2
+  |> Trace.add_dim
+  |> Trace.add_diff [0] col3
+  |> Trace.add_diff [1] col4
+  |> Trace.debug_empty_output
+  |> Trace.get_version [1; 1]
+  |> to_collection
+  |> Collection.get "This"
+
+let test_trace_10 =
+  Trace.init col1 
+  |> Trace.add_dim 
+  |> Trace.add_diff [] col2
+  |> Trace.add_diff [] col2
+  |> Trace.add_dim
+  |> Trace.add_diff [0] col3
+  |> Trace.add_diff [1] col4
+  |> Trace.swap [0;0] col4
+  |> Trace.get_version [0; 0]
+  |> to_collection
+  |> Collection.get "This"
+
+let test_trace_11 =
   Trace.init col1 
   |> Trace.add_dim 
   |> Trace.add_diff [] col2
@@ -107,9 +133,9 @@ let test_trace_08 =
   |> Trace.add_diff [0] col3
   |> Trace.add_diff [1] col4
   |> Trace.distinct
-  |> Trace.get_version [1; 1]
+  |> Trace.get_version [2; 0]
   |> to_collection
-  |> Collection.get "This" *)
+  |> Collection.get "This"
 
 let _ =
   let x = Trace.init col1 
@@ -119,7 +145,9 @@ let _ =
   |> Trace.add_dim
   |> Trace.add_diff [0] col3
   |> Trace.add_diff [1] col4
-  (* |> Trace.distinct *)
+  |> Trace.add_diff [2] col4
+  |> Trace.add_diff [2] col4
+  |> Trace.distinct
   in Printf.printf "DEBUG_LIST: %s" (debug_iter_tostring x)
 
 let benchmark_tests = "test suite for benchmark" >::: [
@@ -141,7 +169,9 @@ let trace_tests = "test suite for trace" >::: [
   "06"  >:: (fun _ -> assert_equal 3 (test_trace_06) ~printer:string_of_int); 
   "07"  >:: (fun _ -> assert_equal 7 (test_trace_07) ~printer:string_of_int);
   "08"  >:: (fun _ -> assert_equal 17 (test_trace_08) ~printer:string_of_int);
-  (* "09"  >:: (fun _ -> assert_equal 1 (test_trace_09) ~printer:string_of_int); *)
+  "09"  >:: (fun _ -> assert_equal 0 (test_trace_09) ~printer:string_of_int);
+  "10"  >:: (fun _ -> assert_equal 7 (test_trace_10) ~printer:string_of_int);
+  "11"  >:: (fun _ -> assert_equal 1 (test_trace_11) ~printer:string_of_int);
 ]
 
 

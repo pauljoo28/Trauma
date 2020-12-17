@@ -2,7 +2,25 @@ open Collection
 
 type 'a trace = Base of 'a collection | Ind of ('a trace list * int)
 
+
+let debug_int_list_tostring (input:int list) : string =
+    "(" ^ String.concat ", " (List.map (fun x -> string_of_int x) input) ^ ")"
+
+let debug_int_list_list_tostring (input:int list list) : string =
+    "[" ^ String.concat ", " (List.map (fun x -> debug_int_list_tostring x) input) ^ "]"
+
 let init (col:'a collection) : 'a trace = Base(col)
+
+let rec swap (time: int list) (col:'a collection) (tr: 'a trace) : 'a trace =
+    match time with
+    | [] -> (
+        match tr with
+        | Base c -> Base col
+        | Ind _ -> failwith "Dimensions too small")
+    | h :: t -> (
+        match tr with
+        | Base _ -> failwith "Dimension too large"
+        | Ind (trl, d) -> Ind (List.mapi (fun i x -> if i=h then swap t col x else x) trl, d))
 
 let to_collection (tr:'a trace) : 'a collection =
     match tr with
@@ -86,7 +104,7 @@ let rec get_version_helper (k:(int list) list) (tr:'a trace) (acc:'a collection)
     match k with
     | [] -> acc
     | h :: t -> 
-        let diff = get_diff_version h tr in
+        let diff = try get_diff_version h tr with Failure _ -> Base(Collection.empty) in
         match diff with
         | Base c -> get_version_helper t tr (Collection.add c acc)
         | Ind _ -> failwith "Diff was not a collection. Try checking the time and dimension of trace."
@@ -119,7 +137,7 @@ let rec distinct (tr:'a trace) : 'a trace =
 and distinct_helper (itr:'a trace) (otr:'a trace) (time:int list) : 'a trace =
     let iversion = get_version time itr |> to_collection in
     let oversion = get_version time otr |> to_collection in
-    Base (Collection.subtract (Collection.distinct iversion) (oversion))
+    swap time (Collection.subtract (Collection.distinct iversion) (oversion)) otr
 
 and distinct_helper_2 (itr:'a trace) (otr:'a trace) (times:int list list) : 'a trace =
     match times with
@@ -134,11 +152,8 @@ let debug_get_dim (tr:'a trace) : int =
     | Base c -> 0
     | Ind (_, d) -> d
 
-let debug_int_list_tostring (input:int list) : string =
-    "(" ^ String.concat ", " (List.map (fun x -> string_of_int x) input) ^ ")"
-
-let debug_int_list_list_tostring (input:int list list) : string =
-    "[" ^ String.concat ", " (List.map (fun x -> debug_int_list_tostring x) input) ^ "]"
-
 let debug_iter_tostring (input:'a trace) : string =
     debug_int_list_list_tostring (iter input)
+
+let debug_empty_output (input:'a trace) : 'a trace =
+    empty_output input
