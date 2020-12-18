@@ -7,8 +7,8 @@ string y = "4";
 print (y);
 Collection c = Collection.empty;
 Collection f = c.insertC("hello", 2);
-Trace d = Trace.init(c);
-Trace e = d.insertT(f)
+Trace e = Trace.init(c)
+           .insertT(f)
            .insertT(f.insertC("world",-1))
            .insertT(f.insertC("world",100));
 pair g = [2, 2];
