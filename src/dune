@@ -5,4 +5,4 @@
 
 (library
   (name impl)
-  (libraries str))
+  (libraries str ounit2))

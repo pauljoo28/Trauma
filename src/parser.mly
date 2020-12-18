@@ -12,6 +12,7 @@ exception ParseException of string
 %token EOF
 %token <int> NUM
 %token <string> ID
+%token <string> VSTRING
 %token SKIP
 %token TRUE
 %token FALSE
@@ -28,7 +29,6 @@ exception ParseException of string
 %token LPAREN
 %token RPAREN
 %token ASSIGN
-%token QUOTE
 %token EMPTY
 
 %token INT
@@ -116,7 +116,7 @@ expr:
      { TEmpty }
   | n = NUM;
     { Num (n) }
-  | QUOTE; v = ID; QUOTE;
+  | v = VSTRING;
     { String v }
   | v = ID;
     { Var v }

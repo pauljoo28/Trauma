@@ -24,7 +24,7 @@ let test_trace_01 =
   |> Trace.add_dim 
   |> Trace.add_diff [] col2
   |> Trace.get_diff_version [0] 
-  |> to_collection 
+  |> to_collection
   |> Collection.get "This"
 
 let test_trace_02 =

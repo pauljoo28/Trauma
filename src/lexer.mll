@@ -14,6 +14,7 @@ let letter = ['a'-'z' 'A'-'Z']
 let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
 let newline = ['\n' '\r']
 let comment = "//" [^ '\r' '\n']* 
+let str = ['"'] (['\"']|[ ^ '\r' '\n' '"' ])* ['"']
 
 (* Lexer definition *)
 
@@ -58,12 +59,12 @@ rule read = parse
   | "empty"         { EMPTY }
   | "insertC"       { CINSERT }
   | "insertT"       { TINSERT }
-  | "\""             { QUOTE }
   (* Built in function *)
   | "distinct"      { DISTINCT }
 
   | num as num      { NUM (int_of_string num) }
   | id as id        { ID id }
+  | str as str      { VSTRING str }
   | eof             { EOF }
   | _ as c  {
             let pos = lexbuf.Lexing.lex_curr_p in
