@@ -137,6 +137,8 @@ let test_trace_11 =
   |> to_collection
   |> Collection.get "This"
 
+(** Debug Printer Example: You can look in mlis for more tostring methods *)
+(* 
 let _ =
   let x = Trace.init col1 
   |> Trace.add_dim 
@@ -148,7 +150,8 @@ let _ =
   |> Trace.add_diff [2] col4
   |> Trace.add_diff [2] col4
   |> Trace.distinct
-  in Printf.printf "DEBUG_LIST: %s" (debug_iter_tostring x)
+  in Printf.printf "DEBUG: %s" (debug_iter_tostring x)
+*)
 
 let benchmark_tests = "test suite for benchmark" >::: [
   "01"  >:: (fun _ -> assert_equal 2 (2));

@@ -2,7 +2,6 @@ open Collection
 
 type 'a trace = Base of 'a collection | Ind of ('a trace list * int)
 
-
 let debug_int_list_tostring (input:int list) : string =
     "(" ^ String.concat ", " (List.map (fun x -> string_of_int x) input) ^ ")"
 
