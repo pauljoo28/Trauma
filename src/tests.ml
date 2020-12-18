@@ -15,6 +15,7 @@ let col1 = Collection.empty |> Collection.insert ("This", 2)
 let col2 = Collection.empty |> Collection.insert ("This", 3)
 let col3 = Collection.empty |> Collection.insert ("This", 5)
 let col4 = Collection.empty |> Collection.insert ("This", 7)
+let col5 = Collection.empty |> Collection.insert ("This", -30)
 
 let test_trace_01 =
   Trace.init col1 |> Trace.add_dim |> Trace.get_diff_version [0] |> to_collection |> Collection.get "This"
@@ -63,6 +64,8 @@ let test_trace_05 =
   |> to_collection
   |> Collection.get "This"
 
+(** Demo1: The input trace that gets created is of the form [[(This,2), (This,5)], [(This,3), (This,7)]].
+	  get_diff_version gets the input[1][0] using list notation or (This,3) *)
 let test_trace_06 =
   Trace.init col1 
   |> Trace.add_dim 
@@ -86,6 +89,8 @@ let test_trace_07 =
   |> to_collection
   |> Collection.get "This"
 
+(** Demo2: The input trace that gets created is of the form [[(This,2), (This,5)], [(This,3), (This,7)]].
+	  get_version adds elements at index t such that t <= (1,1) or [(0,0), (0,1), (1,0), (1,1)] giving  (This,17) *)
 let test_trace_08 =
   Trace.init col1 
   |> Trace.add_dim 
@@ -124,6 +129,9 @@ let test_trace_10 =
   |> to_collection
   |> Collection.get "This"
 
+(** Demo3: The input trace that gets created is of the form [[(This,2), (This,5)], [(This,3), (This, 7), (This, -30)], (This,3)].
+          Trace.distinct creates the diff [[(This,1), (This,0)], [(This,0), (col7)], (This,0)] 
+	  Final get_version adds (This,1) + (This,0) + (This,0) + (This,0) + (This, -1)  *)
 let test_trace_11 =
   Trace.init col1 
   |> Trace.add_dim 
@@ -132,8 +140,9 @@ let test_trace_11 =
   |> Trace.add_dim
   |> Trace.add_diff [0] col3
   |> Trace.add_diff [1] col4
+  |> Trace.add_diff [1] col5
   |> Trace.distinct
-  |> Trace.get_version [2; 0]
+  |> Trace.get_version [1; 2]
   |> to_collection
   |> Collection.get "This"
 
@@ -174,7 +183,7 @@ let trace_tests = "test suite for trace" >::: [
   "08"  >:: (fun _ -> assert_equal 17 (test_trace_08) ~printer:string_of_int);
   "09"  >:: (fun _ -> assert_equal 0 (test_trace_09) ~printer:string_of_int);
   "10"  >:: (fun _ -> assert_equal 7 (test_trace_10) ~printer:string_of_int);
-  "11"  >:: (fun _ -> assert_equal 1 (test_trace_11) ~printer:string_of_int);
+  "11"  >:: (fun _ -> assert_equal 0 (test_trace_11) ~printer:string_of_int);
 ]
 
 let _ = run_test_tt_main benchmark_tests
