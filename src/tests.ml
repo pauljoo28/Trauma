@@ -174,7 +174,6 @@ let trace_tests = "test suite for trace" >::: [
   "11"  >:: (fun _ -> assert_equal 1 (test_trace_11) ~printer:string_of_int);
 ]
 
-
 let _ = run_test_tt_main benchmark_tests
 
 let _ = run_test_tt_main collection_tests
