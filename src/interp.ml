@@ -37,15 +37,14 @@ let rec step_expr (e : expr) (s : sigma) : (values * sigma) =
   | ESeq c -> eval_eseq c s
   | Assign (typ, str, exp) -> eval_assign typ str exp s
   | ReAssign (str, exp) -> eval_reassign str exp s
+  | CEmpty -> eval_cempty s
+  | TEmpty (e) -> eval_tempty e s
   | _ -> failwith "Unimplmented"
-  (* | Assign of (typ * string * expr)
-  | ReAssign of (string * expr)
+  (* 
   | Pair of (expr * expr)
   | Fst of (expr)
   | Snd of (expr)
   (* Differential Dataflow Specific Expressions *)
-  | CEmpty
-  | TEmpty
   | Collection of (string collection)
   | Trace of (string trace)
   | Distinct of (expr)
@@ -61,6 +60,14 @@ and eval_str (str:string) (s:sigma) : values * sigma =
 
 and eval_var (v:string) (s:sigma) : values * sigma =
   Assoc.lookup v s, s
+
+and eval_tempty (e:expr) (s:sigma) : values * sigma =
+  match step_expr e s with
+  | VCollection e, s -> VTrace (Trace.init e), s
+  | _ -> failwith "Not a collection"
+
+and eval_cempty (s:sigma) : values * sigma =
+  VCollection (Collection.empty), s
 
 and eval_minus (n1:expr) (n2:expr) (s:sigma) : values * sigma =
   (match step_expr n1 s, step_expr n2 s with

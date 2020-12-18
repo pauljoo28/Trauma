@@ -42,7 +42,7 @@ type expr =
   | Snd of (expr)
   (* Differential Dataflow Specific Expressions *)
   | CEmpty
-  | TEmpty
+  | TEmpty of (expr)
   | Collection of (string collection)
   | Trace of (string trace)
   | Distinct of (expr)

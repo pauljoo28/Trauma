@@ -57,6 +57,7 @@ rule read = parse
   | "Collection"    { COLLECTION }
   | "Trace"         { TRACE }
   | "empty"         { EMPTY }
+  | "init"          { INIT }
   | "insertC"       { CINSERT }
   | "insertT"       { TINSERT }
   (* Built in function *)

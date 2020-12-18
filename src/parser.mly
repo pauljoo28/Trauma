@@ -30,6 +30,7 @@ exception ParseException of string
 %token RPAREN
 %token ASSIGN
 %token EMPTY
+%token INIT
 
 %token INT
 %token STRING
@@ -112,8 +113,8 @@ expr:
     { False }
   | COLLECTION; DOT; EMPTY;
      { CEmpty }
-  | TRACE; DOT; EMPTY;
-     { TEmpty }
+  | TRACE; DOT; INIT; LPAREN; e = expr; RPAREN;
+     { TEmpty e }
   | n = NUM;
     { Num (n) }
   | v = VSTRING;

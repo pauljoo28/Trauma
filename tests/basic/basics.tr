@@ -5,3 +5,5 @@ x = x + 3;
 print (x);
 string y = "4";
 print (y);
+Collection c = Collection.empty;
+Trace d = Trace.init(c);
