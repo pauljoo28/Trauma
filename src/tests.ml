@@ -130,8 +130,9 @@ let test_trace_10 =
   |> Collection.get "This"
 
 (** Demo3: The input trace that gets created is of the form [[(This,2), (This,5)], [(This,3), (This, 7), (This, -30)], (This,3)].
-          Trace.distinct creates the diff [[(This,1), (This,0)], [(This,0), (col7)], (This,0)] 
-	  Final get_version adds (This,1) + (This,0) + (This,0) + (This,0) + (This, -1)  *)
+          Trace.distinct creates the diff trace [[(This,1), (This,0)], [(This,0), (col7)], (This,0)] 
+	  Final get_version adds (This,1) + (This,0) + (This,0) + (This,0) + (This, -1)  
+          This is what you expect from doing distinct((This,2) + (This,5) + (This,3) + (This, 7) + (This, -30)) = distinct(This, -13) = (This,0) *)
 let test_trace_11 =
   Trace.init col1 
   |> Trace.add_dim 

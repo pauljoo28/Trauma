@@ -2,6 +2,8 @@
 
 This is a Trauma. A programming language that is meant to prototype the concepts of differential dataflow outlined in this paper: http://michaelisard.com/pubs/differentialdataflow.pdf.
 
+Semantics are described under semantics.pdf.
+
 Some of the starting code was taken from pauljoo28/Imp
 
 OCaml 4.04 or higher required
@@ -35,3 +37,11 @@ Running
 
 run `trauma tests/basic/*` for basic imp commands
 run `trauma tests/differential_dataflow/*` for differential dataflow commands
+
+Unit Testing
+-----
+
+Go to the `src` directory.
+
+run `make build-test` for building the tests
+run `make unit-test` for running the tests
