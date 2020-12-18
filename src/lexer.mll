@@ -27,16 +27,9 @@ rule read = parse
   | "false"         { FALSE }
   | "while"         { WHILE }
   | "int"           { INT }
-  | "let"           { LET }
-  | ":"             { COLON }
-  | "be"            { BE }
-  | "on"            { ON }
-  | "iter"          { ITER }
-  | "to"            { TO }
   | "fst"           { FST }
   | "snd"           { SND }
   | "out"           { OUT }
-  | "zero"          { ZERO }
   | ","             { COMMA }
   | "."             { DOT }
   | "["             { LBRACKET }
@@ -52,15 +45,14 @@ rule read = parse
   | ";"             { SEQ }
   | "("             { LPAREN }
   | ")"             { RPAREN }
-  | "if"            { IF }
-  | "{"             { THEN }
-  | "else"          { ELSE }
-  | "}"             { END }
   | "="             { ASSIGN }
-  | "EMPTY"         { EMPTY }
-  (* Built in functions *)
-  | "insert"        { FINSERT }
-  | "TRACE"         { TRACE }
+  (* Collection and Trace *)
+  | "Collection"    { COLLECTION }
+  | "Trace"         { TRACE }
+  | "insertC"       { CINSERT }
+  | "insertT"       { TINSERT }
+  (* Built in function *)
+  | "distinct"      { DISTINCT }
 
   | num as num      { NUM (int_of_string num) }
   | id as id        { ID id }

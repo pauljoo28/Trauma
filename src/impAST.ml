@@ -1,4 +1,5 @@
 open Collection
+open Trace
 
 type typ =
   | Int
@@ -15,6 +16,7 @@ type expr =
   (* Basic Imp expressions *)
   | Num of int
   | Var of string
+  | String of string
   | Plus of (expr * expr)
   | Minus of (expr * expr)
   | Mult of (expr * expr)
@@ -30,22 +32,18 @@ type expr =
   | Print of expr
   | Seq of (expr * expr)
   | ESeq of expr
-  | If of (expr * expr * expr)
   | Assign of (string * expr)
-  | While of (expr * expr)
   | Pair of (expr * expr)
-  (* Differential Dataflow Specific Expressions *)
-  | Let of (expr * group * expr * expr)
-  | Unit of (group)
-  | Sum of (expr * expr)
-  | Neg of (expr)
-  | Prod of (expr * expr)
   | Fst of (expr)
   | Snd of (expr)
-  | Iter of (expr * group * expr * expr)
-  | Out of (int * expr)
-  | Collection of (collection)
-  | Finsert of (expr * expr)
-  | Trace of (expr list)
+  (* Differential Dataflow Specific Expressions *)
+  | CEmpty
+  | TEmpty
+  | Collection of (string collection)
+  | Trace of (string trace)
+  | Distinct of (expr)
+  | TInsert of (expr*expr)
+  | CInsert of (expr*expr)
+  | Out of (int list * expr)
 
 type prog = expr
