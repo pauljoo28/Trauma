@@ -45,15 +45,8 @@ let rec step_expr (e : expr) (s : sigma) : (values * sigma) =
   | TEmpty (e) -> eval_tempty e s
   | CInsert (c, k, v) -> eval_cinsert c k v s
   | TInsert (t, c) -> eval_tinsert t c s
-  | _ -> failwith "Unimplmented"
-  (* 
-  | Pair of (expr * expr)
-  (* Differential Dataflow Specific Expressions *)
-  | Collection of (string collection)
-  | Trace of (string trace)
-  | Distinct of (expr)
-  | TInsert of (expr*expr)
-  | Out of (expr * expr) *)
+  | Distinct (e) -> eval_distinct e s
+  | Out (k, e) -> eval_out k e s
 
 and eval_num (n:int) (s:sigma) : values * sigma =
   VInt n, s
@@ -114,6 +107,30 @@ and eval_tinsert (tr:expr) (c:expr) (s:sigma) : values * sigma =
   else if Trace.get_dim trace = 1 then VTrace (Trace.add_diff [] col trace), s
   else failwith "Cannot add diffs to a trace with more than 1 dimension"
 
+and eval_distinct (e:expr) (s:sigma) : values * sigma =
+  match step_expr e s with
+  | (VTrace tr, _) -> VTrace (Trace.distinct tr), s
+  | _ -> failwith "Not operating on a trace"
+
+and eval_out (k:expr) (e:expr) (s:sigma) : values * sigma =
+  let rec time p acc = 
+    match p with
+    | VInt x -> x :: acc
+    | VPair (x, y) -> 
+        (match x with
+        | VInt h -> time y (h :: acc)
+        | _ -> failwith "Head is not an VInt")
+    | _ -> failwith "Not a VInt or VPair"
+  in
+  let insert_time = 
+    match step_expr k s with
+    | VInt x, _ -> [x]
+    | VPair (x, y), _ -> time (VPair (x, y)) []
+    | _ -> failwith "Must be int or pair" in
+  match step_expr e s with
+  | (VTrace tr, _) -> VCollection ((Trace.get_version insert_time tr) |> Trace.to_collection), s
+  | _ -> failwith "Not operating on a trace"
+
 and eval_minus (n1:expr) (n2:expr) (s:sigma) : values * sigma =
   (match step_expr n1 s, step_expr n2 s with
   | (VInt n1', _), (VInt n2', _) -> VInt (n1' - n2'), s
@@ -162,6 +179,7 @@ and eval_print (a:expr) (s:sigma) : values * sigma =
     | VInt n, _ -> print_endline (string_of_int n); (VSkip, s)
     | VBool x, _ -> print_endline (string_of_bool x); (VSkip, s)
     | VString x, _ -> print_endline (x); (VSkip, s)
+    | VCollection x, _ -> print_endline (Collection.debug_string_collection_tostring x); (VSkip,s)
     | _ -> failwith "aexp did not reduce down VInt value")
 
 and eval_seq (c1:expr) (c2:expr) (s:sigma) : values * sigma =

@@ -6,14 +6,11 @@ print (x);
 string y = "4";
 print (y);
 Collection c = Collection.empty;
-Trace d = Trace.init(c);
 Collection f = c.insertC("hello", 2);
+Trace d = Trace.init(c);
 Trace e = d.insertT(f)
-           .insertT(f)
-           .insertT(f)
-           .insertT(f)
-           .insertT(f)
-           .insertT(f);
+           .insertT(f.insertC("world",-1))
+           .insertT(f.insertC("world",100));
 pair g = [2, 2];
 print(fst(g));
 print(snd(g));
@@ -24,3 +21,14 @@ pair k = snd([2, g]);
 
 pair l = [2, [2,2]];
 pair m = snd(l);
+
+print(c);
+print(f);
+
+Trace output = e.distinct();
+print("OUTPUTS");
+print(out[0](output));
+print(out[1](output));
+print(out[2](output));
+print(out[3](output));
+print(out[4](output));
