@@ -14,3 +14,13 @@ Trace e = d.insertT(f)
            .insertT(f)
            .insertT(f)
            .insertT(f);
+pair g = [2, 2];
+print(fst(g));
+print(snd(g));
+int h = fst(g);
+int i = snd(g);
+pair j = [2, snd(g)];
+pair k = snd([2, g]);
+
+pair l = [2, [2,2]];
+pair m = snd(l);

@@ -9,8 +9,8 @@ type values =
   | VString of string
   | VCollection of string collection
   | VTrace of string trace
-  | VPair of int list
   | VSkip
+  | VPair of (values * values)
 
 type sigma = values context
 
@@ -37,6 +37,9 @@ let rec step_expr (e : expr) (s : sigma) : (values * sigma) =
   | ESeq c -> eval_eseq c s
   | Assign (typ, str, exp) -> eval_assign typ str exp s
   | ReAssign (str, exp) -> eval_reassign str exp s
+  | Pair (e1, e2) -> eval_pair e1 e2 s
+  | Fst e -> eval_fst e s
+  | Snd e -> eval_snd e s
   (* Differential Dataflow Specific Expressions *)
   | CEmpty -> eval_cempty s
   | TEmpty (e) -> eval_tempty e s
@@ -45,8 +48,6 @@ let rec step_expr (e : expr) (s : sigma) : (values * sigma) =
   | _ -> failwith "Unimplmented"
   (* 
   | Pair of (expr * expr)
-  | Fst of (expr)
-  | Snd of (expr)
   (* Differential Dataflow Specific Expressions *)
   | Collection of (string collection)
   | Trace of (string trace)
@@ -62,6 +63,20 @@ and eval_str (str:string) (s:sigma) : values * sigma =
 
 and eval_var (v:string) (s:sigma) : values * sigma =
   Assoc.lookup v s, s
+
+and eval_pair (e1:expr) (e2:expr) (s:sigma) : values * sigma =
+  match step_expr e1 s, step_expr e2 s with
+  | (x, _), (y, _) -> VPair (x, y), s
+
+and eval_fst (e:expr) (s:sigma) : values * sigma =
+  match step_expr e s with
+  | VPair (x, y), _ -> x, s
+  | _ -> failwith "Not a VPair"
+
+and eval_snd (e:expr) (s:sigma) : values * sigma =
+  match step_expr e s with
+  | VPair (x, y), _ -> y, s
+  | _ -> failwith "Not a VPair"
 
 and eval_tempty (e:expr) (s:sigma) : values * sigma =
   match step_expr e s with
