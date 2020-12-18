@@ -25,7 +25,6 @@ rule read = parse
   | "print"         { PRINT }
   | "true"          { TRUE }
   | "false"         { FALSE }
-  | "while"         { WHILE }
   | "int"           { INT }
   | "fst"           { FST }
   | "snd"           { SND }
@@ -46,11 +45,20 @@ rule read = parse
   | "("             { LPAREN }
   | ")"             { RPAREN }
   | "="             { ASSIGN }
+  | "fst"           { FST }
+  | "snd"           { SND }
+  (* Types *)
+  | "int"           { INT }
+  | "string"        { STRING }
+  | "pair"          { PAIR }
+  | "bool"          { BOOL }
   (* Collection and Trace *)
   | "Collection"    { COLLECTION }
   | "Trace"         { TRACE }
+  | "empty"         { EMPTY }
   | "insertC"       { CINSERT }
   | "insertT"       { TINSERT }
+  | "\""             { QUOTE }
   (* Built in function *)
   | "distinct"      { DISTINCT }
 

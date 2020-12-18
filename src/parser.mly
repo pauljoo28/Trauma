@@ -27,33 +27,30 @@ exception ParseException of string
 %token SEQ
 %token LPAREN
 %token RPAREN
-%token IF
-%token ELSE
-%token THEN
-%token END
 %token ASSIGN
-%token WHILE
+%token QUOTE
 %token EMPTY
-%token TRACE
 
-%token LET
-%token COLON
-%token SIGMA
-%token BE
-%token ON
-%token ITER
-%token TO
+%token INT
+%token STRING
+%token PAIR
+%token BOOL
+
+%token COLLECTION
+%token TRACE
+%token CINSERT
+%token TINSERT
+%token DISTINCT
+
 %token FST
 %token SND
+
 %token OUT
 %token LBRACKET
 %token RBRACKET
-%token ZERO
+
 %token COMMA
 %token DOT
-%token FINSERT
-
-%token INT
 
 (* Precedences *)
 %left SEQ
@@ -86,17 +83,15 @@ main:
   | c = expr; EOF;
     { c }
 
-group:
-  | INT;  { Base }
-
-pair:
-  | LPAREN; e1 = expr; COMMA; e2 = expr; RPAREN; { Pair (e1, e2) }
+typ:
+  | INT; {Int}
+  | BOOL; {Bool}
+  | STRING; {String}
+  | COLLECTION; {Collection}
+  | TRACE; {Trace}
+  | PAIR; {Pair}
 
 expr:
-  | e1 = expr; DOT; FINSERT; LPAREN; e2 = expr; RPAREN;
-     { Finsert (e1, e2) }
-  | TRACE; LPAREN; e = separated_list(COMMA, expr); RPAREN;
-     { Trace e }
   | c1 = expr; SEQ; c2 = expr;
     { Seq (c1, c2) }
   | c = expr; SEQ;
@@ -107,16 +102,38 @@ expr:
     { Skip }
   | PRINT; a = expr;
     { Print(a) }
-  | IF; b = expr; THEN; c1 = expr; END; ELSE; THEN; c2 = expr; END;
-    { If (b, c1, c2) }
+  | t = typ; v = ID; ASSIGN; a = expr;
+    { Assign (t, v, a) }
   | v = ID; ASSIGN; a = expr;
-    { Assign (v, a) }
-  | WHILE; b = expr; THEN; c = expr; END;
-    { While (b, c) }
+    { ReAssign (v, a) }
   | TRUE;
     { True }
   | FALSE;
     { False }
+  | COLLECTION; DOT; EMPTY;
+     { CEmpty }
+  | TRACE; DOT; EMPTY;
+     { TEmpty }
+  | n = NUM;
+    { Num (n) }
+  | QUOTE; v = ID; QUOTE;
+    { String v }
+  | v = ID;
+    { Var v }
+  | FST; LPAREN; e = expr; RPAREN;
+     { Fst (e) }
+  | SND; LPAREN; e = expr; RPAREN;
+     { Snd (e) }
+  | LBRACKET; e1 = expr; COMMA; e2 = expr; RBRACKET;
+     { Pair (e1, e2) }
+  | OUT; LBRACKET; x = expr; RBRACKET; LPAREN; e = expr; RPAREN;
+     { Out (x, e) }
+  | e1 = expr; DOT; CINSERT; LPAREN; e2 = expr; RPAREN;
+     { CInsert (e1, e2) }
+  | e1 = expr; DOT; TINSERT; LPAREN; e2 = expr; RPAREN;
+     { TInsert (e1, e2) }
+  | e1 = expr; DOT; DISTINCT; LPAREN; RPAREN;
+     { Distinct (e1) }
   | n1 = expr; EQUAL; n2 = expr;
    { Equal (n1, n2) }
   | n1 = expr; LEQ; n2 = expr;
@@ -127,32 +144,11 @@ expr:
     { Or (b1, b2) }
   | b1 = expr; AND; b2 = expr;
     { And (b1, b2) }
-  | n = NUM;
-    { Num(n) }
-  | v = ID;
-    { Var v }
   | n1 = expr; PLUS; n2 = expr;
      { Plus (n1, n2) }
   | n1 = expr; MINUS; n2 = expr;
      { Minus (n1, n2) }
   | n1 = expr; MULT; n2 = expr;
      { Mult (n1, n2) }
-  
-  | LET; x = expr; COLON; s = group; BE; e1 = expr; ON; e2 = expr;
-     { Let (x, s, e1, e2) }
-  | FST; LPAREN; e = expr; RPAREN;
-     { Fst (e) }
-  | SND; LPAREN; e = expr; RPAREN;
-     { Snd (e) }
-  | LBRACKET; e1 = expr; COMMA; e2 = expr; RBRACKET;
-     { Prod (e1, e2) }
-  | ITER; x = expr; COLON; s = group; TO; e1 = expr; ON; e2 = expr;
-     { Iter (x, s, e1, e2) }
-  | OUT; LBRACKET; x = NUM; RBRACKET; LPAREN; e = expr; RPAREN;
-     { Out (x, e) }
-  | EMPTY;
-     { Collection (Collection.empty) }
-  | p = pair;
-      { p }
 
 %%

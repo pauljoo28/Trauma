@@ -4,7 +4,10 @@ open Trace
 type typ =
   | Int
   | Bool
-  | Unit
+  | String
+  | Collection
+  | Trace
+  | Pair
 
 type group =
   | Unit
@@ -32,7 +35,8 @@ type expr =
   | Print of expr
   | Seq of (expr * expr)
   | ESeq of expr
-  | Assign of (string * expr)
+  | Assign of (typ * string * expr)
+  | ReAssign of (string * expr)
   | Pair of (expr * expr)
   | Fst of (expr)
   | Snd of (expr)
@@ -44,6 +48,6 @@ type expr =
   | Distinct of (expr)
   | TInsert of (expr*expr)
   | CInsert of (expr*expr)
-  | Out of (int list * expr)
+  | Out of (expr * expr)
 
 type prog = expr
