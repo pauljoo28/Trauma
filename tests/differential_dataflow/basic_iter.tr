@@ -1,2 +1,0 @@
-iteration = (iter x : int to 2 + x on 0);
-print(out[10](iteration));

@@ -1,7 +1,0 @@
-print(2);
-print(3);
-x = 2;
-print(x);
-expression = (iter x : int to 2 + x on 0);
-expression = 12;
-print(4);

@@ -1,0 +1,29 @@
+// First create a couple collections to set up out traces
+Collection c = Collection.empty;
+Collection f = c.insertC("hello", 2);
+
+// Collections go into trace. The order in which the are inserted is their index. 
+// The collections here represent differences, not versions.
+Trace e = Trace.init(c)
+           .insertT(f)
+           .insertT(f.insertC("world",-1))
+           .insertT(f.insertC("world",100));
+
+// Let us print out the versions
+print("INPUT VERSIONS");
+print(out[0](e));
+print(out[1](e));
+print(out[2](e));
+print(out[3](e));
+print(out[4](e));
+
+// Let us run our distinct differential operator on the trace
+Trace output = e.distinct();
+
+// Now we get output versions
+print("OUTPUT VERSIONS");
+print(out[0](output));
+print(out[1](output));
+print(out[2](output));
+print(out[3](output));
+print(out[4](output));
