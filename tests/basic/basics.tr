@@ -1,3 +1,4 @@
+// Basic Functionality from IMP
 print(2);
 print(2+2);
 int x = 3;
@@ -5,12 +6,16 @@ x = x + 3;
 print (x);
 string y = "4";
 print (y);
+
+// Creating Collections and Traces
 Collection c = Collection.empty;
 Collection f = c.insertC("hello", 2);
 Trace e = Trace.init(c)
            .insertT(f)
            .insertT(f.insertC("world",-1))
            .insertT(f.insertC("world",100));
+
+// Pairs
 pair g = [2, 2];
 print(fst(g));
 print(snd(g));
@@ -18,13 +23,13 @@ int h = fst(g);
 int i = snd(g);
 pair j = [2, snd(g)];
 pair k = snd([2, g]);
-
 pair l = [2, [2,2]];
 pair m = snd(l);
 
 print(c);
 print(f);
 
+// Differential Distince Operator on Traces
 Trace output = e.distinct();
 print("OUTPUTS");
 print(out[0](output));
