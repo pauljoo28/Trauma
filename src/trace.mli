@@ -26,6 +26,9 @@ val get_version : int list -> 'a trace -> 'a trace
 (** [distince tr] creates the output trace *)
 val distinct : 'a trace -> 'a trace
 
+(** [get_dim tr] gets the dimesions of current trace *)
+val get_dim : 'a trace -> int
+
 (** Debug *)
 val debug_get_dim : 'a trace -> int
 val debug_iter_tostring : 'a trace -> string

@@ -129,8 +129,8 @@ expr:
      { Pair (e1, e2) }
   | OUT; LBRACKET; x = expr; RBRACKET; LPAREN; e = expr; RPAREN;
      { Out (x, e) }
-  | e1 = expr; DOT; CINSERT; LPAREN; e2 = expr; RPAREN;
-     { CInsert (e1, e2) }
+  | e1 = expr; DOT; CINSERT; LPAREN; e2 = expr; COMMA; e3 = expr; RPAREN;
+     { CInsert (e1, e2, e3) }
   | e1 = expr; DOT; TINSERT; LPAREN; e2 = expr; RPAREN;
      { TInsert (e1, e2) }
   | e1 = expr; DOT; DISTINCT; LPAREN; RPAREN;

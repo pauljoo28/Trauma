@@ -37,8 +37,11 @@ let rec step_expr (e : expr) (s : sigma) : (values * sigma) =
   | ESeq c -> eval_eseq c s
   | Assign (typ, str, exp) -> eval_assign typ str exp s
   | ReAssign (str, exp) -> eval_reassign str exp s
+  (* Differential Dataflow Specific Expressions *)
   | CEmpty -> eval_cempty s
   | TEmpty (e) -> eval_tempty e s
+  | CInsert (c, k, v) -> eval_cinsert c k v s
+  | TInsert (t, c) -> eval_tinsert t c s
   | _ -> failwith "Unimplmented"
   (* 
   | Pair of (expr * expr)
@@ -49,7 +52,6 @@ let rec step_expr (e : expr) (s : sigma) : (values * sigma) =
   | Trace of (string trace)
   | Distinct of (expr)
   | TInsert of (expr*expr)
-  | CInsert of (expr*expr)
   | Out of (expr * expr) *)
 
 and eval_num (n:int) (s:sigma) : values * sigma =
@@ -68,6 +70,34 @@ and eval_tempty (e:expr) (s:sigma) : values * sigma =
 
 and eval_cempty (s:sigma) : values * sigma =
   VCollection (Collection.empty), s
+
+and eval_cinsert (c:expr) (k:expr) (v:expr) (s:sigma) : values * sigma =
+  let key = 
+    (match step_expr k s with
+    | VString x, _ -> x
+    | _ -> failwith "Not a string key") in
+  let value =
+    (match step_expr v s with
+    | VInt x, _ -> x
+    | _ -> failwith "Not an int value") in
+  let col =
+    (match step_expr c s with
+    | VCollection x, _ -> x
+    | _ -> failwith "Not a collection") in
+  VCollection (Collection.insert (key, value) col), s
+
+and eval_tinsert (tr:expr) (c:expr) (s:sigma) : values * sigma =
+  let trace =
+    (match step_expr tr s with
+    | VTrace x, _ -> x
+    | _ -> failwith "Not a string key") in
+  let col =
+    (match step_expr c s with
+    | VCollection x, _ -> x
+    | _ -> failwith "Not a string key") in
+  if Trace.get_dim trace = 0 then VTrace (Trace.add_dim trace |> Trace.add_diff [] col), s
+  else if Trace.get_dim trace = 1 then VTrace (Trace.add_diff [] col trace), s
+  else failwith "Cannot add diffs to a trace with more than 1 dimension"
 
 and eval_minus (n1:expr) (n2:expr) (s:sigma) : values * sigma =
   (match step_expr n1 s, step_expr n2 s with

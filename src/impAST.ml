@@ -43,11 +43,9 @@ type expr =
   (* Differential Dataflow Specific Expressions *)
   | CEmpty
   | TEmpty of (expr)
-  | Collection of (string collection)
-  | Trace of (string trace)
   | Distinct of (expr)
   | TInsert of (expr*expr)
-  | CInsert of (expr*expr)
+  | CInsert of (expr*expr*expr)
   | Out of (expr * expr)
 
 type prog = expr

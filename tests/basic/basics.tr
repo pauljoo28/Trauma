@@ -7,3 +7,10 @@ string y = "4";
 print (y);
 Collection c = Collection.empty;
 Trace d = Trace.init(c);
+Collection f = c.insertC("hello", 2);
+Trace e = d.insertT(f)
+           .insertT(f)
+           .insertT(f)
+           .insertT(f)
+           .insertT(f)
+           .insertT(f);

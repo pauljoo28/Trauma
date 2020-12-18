@@ -147,10 +147,13 @@ and distinct_helper_2 (itr:'a trace) (otr:'a trace) (times:int list list) : 'a t
 and empty_output (input:'a trace) : 'a trace =
     map (fun x -> Collection.empty) input
 
-let debug_get_dim (tr:'a trace) : int =
+let get_dim (tr:'a trace) : int =
     match tr with
     | Base c -> 0
     | Ind (_, d) -> d
+
+let debug_get_dim (tr:'a trace) : int =
+    get_dim tr
 
 let debug_iter_tostring (input:'a trace) : string =
     debug_int_list_list_tostring (iter input)
